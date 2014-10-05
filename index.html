@@ -13,13 +13,13 @@
 		var prev_elms = document.getElementsByClassName("slideshow-ctrl-prev");
 		for (var idx = 0; idx < prev_elms.length; idx++) {
 			prev_elms[idx].addEventListener('click', function () {
-				slideshow.go(-1);
+				slideshow.previous();
 			}, false);
 		};
 		var next_elms = document.getElementsByClassName("slideshow-ctrl-next");
 		for (var idx = 0; idx < next_elms.length; idx++) {
 			next_elms[idx].addEventListener('click', function () {
-				slideshow.go(1);
+				slideshow.next();
 			})
 		};
 	}

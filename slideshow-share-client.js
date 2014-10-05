@@ -54,6 +54,12 @@
 			//インデックス更新
 			this._current_idx = next_idx;
 		};
+		p.previous = function () {
+			this.go(-1);
+		}
+		p.next = function () {
+			this.go(+1);
+		}
 
 		return SlideShow;
 	}());
