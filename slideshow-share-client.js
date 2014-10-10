@@ -7,11 +7,20 @@
 			//WebSocket初期化
 			var s = this._socket = io.connect("http://localhost:3000");
 			s.on("connect", function () {});
-			s.on("disconnect", function(client) {});
+			s.on("disconnect", function (client) {});
 			var _this = this;
-			s.on("S2C_movement", function(data) {
+			//現在共有されているページを取得・現在位置まで移動する
+			s.on("S2C_inform_current_idx", function (data) {
+				for (var i=0; i < data.value; i++) {
+					_this.slideshow.next();
+				}
+			});
+			//他クライアントから指示を処理
+			s.on("S2C_movement", function (data) {
 				_this.recv(data.value);
 			});
+			//サーバーから現在のページを取得
+			s.emit("C2S_fetch_current_idx");
 		}
 		var p = SlideShowController.prototype;
 		//各クライアントに進む/戻るイベントを送信
