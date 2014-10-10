@@ -1,0 +1,15 @@
+{
+  "name": "node-slideshow-share",
+  "version": "0.1.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "socket.io": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lugecy",
+  "license": "BSD Lisence"
+}
