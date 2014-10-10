@@ -11,9 +11,7 @@
 			var _this = this;
 			//現在共有されているページを取得・現在位置まで移動する
 			s.on("S2C_inform_current_idx", function (data) {
-				for (var i=0; i < data.value; i++) {
-					_this.slideshow.next();
-				}
+				_this.slideshow.goto(data.value);
 			});
 			//他クライアントから指示を処理
 			s.on("S2C_movement", function (data) {

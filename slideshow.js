@@ -62,6 +62,16 @@
 			this.go(+1);
 		}
 
+		p.goto = function (goto_idx) {
+			//インデックスの範囲チェック
+			if (goto_idx < 0 || this._image_list.length <= goto_idx) {
+				return;
+			}
+			hide_image(this._image_list[this._current_idx]);
+			show_image(this._image_list[goto_idx]);
+			this._current_idx = goto_idx;
+		}
+
 		return SlideShow;
 	}());
 }(window, window.document));
