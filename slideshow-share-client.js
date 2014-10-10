@@ -5,7 +5,8 @@
 		function SlideShowController (slideshow) {
 			this.slideshow = slideshow;
 			//WebSocket初期化
-			var s = this._socket = io.connect("http://localhost:3000");
+			var host = window.location.hostname;
+			var s = this._socket = io.connect("http://" + host);
 			s.on("connect", function () {});
 			s.on("disconnect", function (client) {});
 			var _this = this;
