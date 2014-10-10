@@ -30,11 +30,9 @@
 			var body = document.getElementById(body_id);
 			for (var idx = 0; idx < this._image_list.length; idx++) {
 				var img = this._image_list[idx];
-				if (idx === 0) {
-					show_image(img);
-				}
 				body.appendChild(img);
 			}
+			this.goto(0);
 		}
 
 		//Public methods
