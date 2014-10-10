@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>SlideShow Share Prototype</title>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="./slideshow.js"></script>
 	<script type="text/javascript" src="./slideshow-share-client.js"></script>
 	<script type="text/javascript">
@@ -11,16 +12,20 @@
 		var image_urls = [{"url":"./pic1.jpg"}, {"url":"./pic2.jpg"}, {url:"./pic3.jpg"}];
 		var slideshow = new www.SlideShow(image_urls, "slideshow-body");
 
+		var slideshow_ctrl = new www.SlideShowController(slideshow);
+
 		var prev_elms = document.getElementsByClassName("slideshow-ctrl-prev");
 		for (var idx = 0; idx < prev_elms.length; idx++) {
 			prev_elms[idx].addEventListener('click', function () {
 				slideshow.previous();
+				slideshow_ctrl.send(-1);
 			}, false);
 		};
 		var next_elms = document.getElementsByClassName("slideshow-ctrl-next");
 		for (var idx = 0; idx < next_elms.length; idx++) {
 			next_elms[idx].addEventListener('click', function () {
 				slideshow.next();
+				slideshow_ctrl.send(+1);
 			})
 		};
 	}
