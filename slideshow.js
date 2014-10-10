@@ -44,7 +44,7 @@
 			var next_idx = this._current_idx + forward_idx;
 			//インデックスの範囲をチェック
 			if (next_idx < 0 || next_idx >= this._image_list.length) {
-				return;
+				return false;
 			}
 			//現在の画像を隠す
 			var curret_image = this._image_list[this._current_idx];
@@ -54,22 +54,24 @@
 			show_image(next_image);
 			//インデックス更新
 			this._current_idx = next_idx;
+			return next_idx;
 		};
 		p.previous = function () {
-			this.go(-1);
+			return this.go(-1);
 		}
 		p.next = function () {
-			this.go(+1);
+			return this.go(+1);
 		}
 
 		p.goto = function (goto_idx) {
 			//インデックスの範囲チェック
 			if (goto_idx < 0 || this._image_list.length <= goto_idx) {
-				return;
+				return false;
 			}
 			hide_image(this._image_list[this._current_idx]);
 			show_image(this._image_list[goto_idx]);
 			this._current_idx = goto_idx;
+			return goto_idx;
 		}
 
 		return SlideShow;
