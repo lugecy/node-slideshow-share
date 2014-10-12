@@ -37,12 +37,12 @@
 			show_image(self._image_list[goto_idx]);
 		}
 
-		function switch_scroll_anim(self, vector) {
-			var _this = self;
+		function switch_scroll_anim(vector) {
+			var self = this;
 			var fps = 60;
 			var interval = 500 / fps;
-			var ul = document.querySelector("#" + _this._body_id + " ul");
-			var scroll_width = _this._screen_width;
+			var ul = document.querySelector("#" + self._body_id + " ul");
+			var scroll_width = self._screen_width;
 			var goal_position = pixel_to_num(ul.style.left) - (scroll_width * vector);
 			function animScroll (scroll_vector) {
 				ul.style.left = pixel_operation(ul.style.left, scroll_vector);
@@ -58,12 +58,12 @@
 			setTimeout(function () { animScroll(move_length * (vector > 0 ? -1 : +1)); }, interval);
 		}
 
-		function goto_scroll_anim(self, goto_idx) {
-			var _this = self;
-			var ul = document.querySelector("#" + _this._body_id + " ul");
+		function goto_scroll_anim(goto_idx) {
+			var self = this;
+			var ul = document.querySelector("#" + self._body_id + " ul");
 			var goal_position = 0;
 			for (var idx = 0; idx < goto_idx; idx++) {
-				goal_position -= _this._screen_width;
+				goal_position -= self._screen_width;
 			}
 			ul.style.left = pixel_operation(ul.style.left, goal_position);
 		}
@@ -157,7 +157,7 @@
 				return false;
 			}
 			//表示画像を入れ替える
-			switch_scroll_anim(this, forward_idx);
+			switch_scroll_anim.call(this, forward_idx);
 			//インデックス更新
 			this._current_idx += forward_idx;
 			return next_idx;
@@ -176,7 +176,7 @@
 			}
 			//該当画像を表示する
 			if (this._ready) {
-				goto_scroll_anim(this, goto_idx);	
+				goto_scroll_anim.call(this, goto_idx);	
 			}
 			//インデックス更新
 			this._current_idx = goto_idx;
