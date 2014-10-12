@@ -39,26 +39,36 @@
 
 		function switch_scroll_anim(self, vector) {
 			var _this = self;
-			var interval = 1000 / 60;
+			var fps = 60;
+			var interval = 500 / fps;
 			var ul = document.querySelector("#" + _this._body_id + " ul");
-			var goal_position = pixel_to_num(ul.style.left) - (400 * vector);
+			var scroll_width = _this._image_list[_this._current_idx - (vector < 0 ? 1 : 0)].naturalWidth;
+			var goal_position = pixel_to_num(ul.style.left) - (scroll_width * vector);
 			function animScroll (scroll_vector) {
 				ul.style.left = pixel_operation(ul.style.left, scroll_vector);
-				if (pixel_to_num(ul.style.left) !== goal_position) {
+				var cur_pos = pixel_to_num(ul.style.left);
+				if (cur_pos !== goal_position) {
+					if (Math.abs(goal_position - cur_pos) < scroll_vector) {
+						if (goal_position < cur_pos) {
+							scroll_vector = goal_position - cur_pos;
+						} else {
+							scroll_vector = goal_position - cur_pos;
+						}
+					}
 					setTimeout(function () { animScroll(scroll_vector); }, interval);
 				}
 			}
-			setTimeout(function () { animScroll(vector > 0 ? -20 : 20); }, interval);
+			var move_length = scroll_width / fps;
+			setTimeout(function () { animScroll(move_length * (vector > 0 ? -1 : +1)); }, interval);
 		}
 
 		function goto_scroll_anim(self, goto_idx) {
 			var _this = self;
-			if (_this._current_idx === goto_idx) {
-				return;
-			}
-			var interval = 1000 / 60;
 			var ul = document.querySelector("#" + _this._body_id + " ul");
-			var goal_position = - (400 * goto_idx);
+			var goal_position = 0;
+			for (var idx = 0; idx < _this._current_idx; idx++) {
+				goal_position -= _this._image_list[idx].naturalWidth;
+			}
 			ul.style.left = pixel_operation(ul.style.left, goal_position);
 		}
 
@@ -67,10 +77,22 @@
 			this._image_list = [];
 			this._current_idx = 0;
 			this._body_id = body_id;
+			this._ready = false;
+			var max_width = 0, max_height = 0, img_loaded_count = 0;
 			//URLリストよりimgタグリストを生成
 			for (var idx = 0; idx < url_list.length; idx++) {
 				var image_info = url_list[idx];
 				var img = new Image();
+				//後述のスライド表示用領域を決定するためのハンドラ
+				img.onload = function () {
+					if (max_width < this.naturalWidth) {
+						max_width = this.naturalWidth;
+					}
+					if (max_height < this.naturalHeight) {
+						max_height = this.naturalHeight;
+					}
+					img_loaded_count++;
+				};
 				img.src = image_info.url;
 				img.className = css_classname;
 				this._image_list.push(img);
@@ -86,7 +108,20 @@
 				ul.appendChild(li);
 			}
 			body.appendChild(ul);
-			this.goto(0);
+			//スライド表示用領域の大きさを決定するために、全ての画像読み込みを待つ必要があるため、
+			//ポーリングする
+			var self = this;
+			function slideshowReadyFunc () {
+				if (img_loaded_count === self._image_list.length) {
+					body.style.width = max_width.toString() + "px";
+					body.style.height = max_height.toString() + "px";
+					self._ready = true;
+					self.goto(self._current_idx);
+				} else {
+					setTimeout(slideshowReadyFunc, 500);
+				}
+			}
+			setTimeout(slideshowReadyFunc, 500);
 		}
 
 		//Public methods
@@ -117,7 +152,9 @@
 				return false;
 			}
 			//該当画像を表示する
-			goto_scroll_anim(this, goto_idx);
+			if (this._ready) {
+				goto_scroll_anim(this, goto_idx);	
+			}
 			//インデックス更新
 			this._current_idx = goto_idx;
 			return goto_idx;
