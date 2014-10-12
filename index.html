@@ -28,7 +28,7 @@
 				if (slideshow.next() !== false) {
 					slideshow_ctrl.send(+1);
 				}
-			})
+			});
 		};
 	}
 	</script>
@@ -36,10 +36,33 @@
 	.slideshow-ctrl {
 	}
 	.slideshow-image {
-		display: none;
+		width: 400px;
+		/* display: none; */
 	}
 	.slideshow-image.active {
-		display: inline;
+		/* display: inline; */
+	}
+	#slideshow-body {
+		overflow: hidden;
+		width: 400px;
+		height: 229px;
+		position: relative;
+		padding: 0px;
+		margin: 0px;
+	}
+	#slideshow-body ul {
+		list-style: none outside none;
+		padding: 0px;
+		margin: 0px;
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 9999px;
+	}
+	#slideshow-body ul li {
+		float: left;
+		width: 400px;
+		position: relative;
 	}
 	</style>
 </head>
