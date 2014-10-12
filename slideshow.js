@@ -62,17 +62,25 @@
 			var _this = self;
 			var ul = document.querySelector("#" + _this._body_id + " ul");
 			var goal_position = 0;
-			for (var idx = 0; idx < _this._current_idx; idx++) {
+			for (var idx = 0; idx < goto_idx; idx++) {
 				goal_position -= _this._screen_width;
 			}
 			ul.style.left = pixel_operation(ul.style.left, goal_position);
 		}
 
-		function setup_slideshow_dom(body) {
+		function setup_slideshow_dom(body, url_list, img_load_handler) {
+			var self = this;
 			var ul = document.createElement("ul");
 			ul.className = "";
-			for (var idx = 0; idx < this._image_list.length; idx++) {
-				var img = this._image_list[idx];
+			for (var idx = 0; idx < url_list.length; idx++) {
+				//画像読み込み・後の表示領域設定のためにハンドラをセット
+				var image_info = url_list[idx];
+				var img = new Image();
+				img.onload = img_load_handler;
+				img.src = image_info.url;
+				img.className = css_classname;
+				self._image_list.push(img);
+				//リスト要素としてDOM構造追加
 				var li = document.createElement("li");
 				var box = document.createElement("div");
 				box.appendChild(img);
@@ -82,56 +90,56 @@
 			body.appendChild(ul);
 		}
 
+		function setup_slideshow() {
+			var self = this;
+			var padding = 8;
+			//画像リストの最大幅・高さを求める
+			var max_width = 0, max_height = 0;
+			for (var idx = 0; idx < self._image_list.length; idx++) {
+				if (max_width < self._image_list[idx].naturalWidth) {
+					max_width = self._image_list[idx].naturalWidth;
+				}
+				if (max_height < self._image_list[idx].naturalHeight) {
+					max_height = self._image_list[idx].naturalHeight;
+				}
+			}
+			//表示領域の幅・高さを設定
+			var width  = self._screen_width  = max_width + padding * 2;
+			var height = self._screen_height = max_height + padding * 2;
+			var body = document.getElementById(self._body_id);
+			body.style.width = width.toString() + "px";
+			body.style.height = height.toString() + "px";
+			//各画像ボックスの幅等を設定
+			var li_list = body.getElementsByTagName("li");
+			for (var i = 0; i < li_list.length; i++) {
+				var li = li_list[i];
+				li.style.width = width.toString() + "px";
+				var box = li.querySelector("div");
+				box.style.width = max_width + "px";
+				box.style.margin = "0px auto";
+				box.style.textAlign = "center";
+			}
+			//表示すべき画像へ移動
+			self._ready = true;
+			self.goto(self._current_idx);
+		}
+
 		//Constructer
 		function SlideShow (url_list, body_id) {
 			this._image_list = [];
 			this._current_idx = 0;
 			this._body_id = body_id;
 			this._ready = false;
-			var max_width = 0, max_height = 0, img_loaded_count = 0;
-			//URLリストよりimgタグリストを生成
-			for (var idx = 0; idx < url_list.length; idx++) {
-				var image_info = url_list[idx];
-				var img = new Image();
-				//後述のスライド表示用領域を決定するためのハンドラ
-				img.onload = function () {
-					if (max_width < this.naturalWidth) {
-						max_width = this.naturalWidth;
-					}
-					if (max_height < this.naturalHeight) {
-						max_height = this.naturalHeight;
-					}
-					img_loaded_count++;
-				};
-				img.src = image_info.url;
-				img.className = css_classname;
-				this._image_list.push(img);
-			}
+			var img_loaded_count = 0;
 			//スライド表示用領域に画像リストを挿入
 			var body = document.getElementById(body_id);
-			setup_slideshow_dom.call(this, body);
-
-			//スライド表示用領域の大きさを決定するために、全ての画像読み込みを待つ必要があるため、
-			//ポーリングする
+			setup_slideshow_dom.call(this, body, url_list, function () { img_loaded_count++; });
+			//スライド表示用領域の大きさを決定するために、
+			//全ての画像読み込みを待つ(ポーリング)
 			var self = this;
 			function slideshowReadyFunc () {
-				var padding = 8;
 				if (img_loaded_count === self._image_list.length) {
-					var width  = self._screen_width  = max_width + padding * 2;
-					var height = self._screen_height = max_height + padding * 2;
-					body.style.width = width.toString() + "px";
-					body.style.height = height.toString() + "px";
-					var li_list = body.getElementsByTagName("li");
-					for (var i = 0; i < li_list.length; i++) {
-						var li = li_list[i];
-						li.style.width = width.toString() + "px";
-						var box = li.querySelector("div");
-						box.style.width = max_width + "px";
-						box.style.margin = "0px auto";
-						box.style.textAlign = "center";
-					}
-					self._ready = true;
-					self.goto(self._current_idx);
+					setup_slideshow.call(self);
 				} else {
 					setTimeout(slideshowReadyFunc, 500);
 				}
