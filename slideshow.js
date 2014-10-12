@@ -42,18 +42,14 @@
 			var fps = 60;
 			var interval = 500 / fps;
 			var ul = document.querySelector("#" + _this._body_id + " ul");
-			var scroll_width = _this._image_list[_this._current_idx - (vector < 0 ? 1 : 0)].naturalWidth;
+			var scroll_width = _this._screen_width;
 			var goal_position = pixel_to_num(ul.style.left) - (scroll_width * vector);
 			function animScroll (scroll_vector) {
 				ul.style.left = pixel_operation(ul.style.left, scroll_vector);
 				var cur_pos = pixel_to_num(ul.style.left);
 				if (cur_pos !== goal_position) {
-					if (Math.abs(goal_position - cur_pos) < scroll_vector) {
-						if (goal_position < cur_pos) {
-							scroll_vector = goal_position - cur_pos;
-						} else {
-							scroll_vector = goal_position - cur_pos;
-						}
+					if (Math.abs(goal_position - cur_pos) < Math.abs(scroll_vector)) {
+						scroll_vector = goal_position - cur_pos;
 					}
 					setTimeout(function () { animScroll(scroll_vector); }, interval);
 				}
@@ -67,9 +63,23 @@
 			var ul = document.querySelector("#" + _this._body_id + " ul");
 			var goal_position = 0;
 			for (var idx = 0; idx < _this._current_idx; idx++) {
-				goal_position -= _this._image_list[idx].naturalWidth;
+				goal_position -= _this._screen_width;
 			}
 			ul.style.left = pixel_operation(ul.style.left, goal_position);
+		}
+
+		function setup_slideshow_dom(body) {
+			var ul = document.createElement("ul");
+			ul.className = "";
+			for (var idx = 0; idx < this._image_list.length; idx++) {
+				var img = this._image_list[idx];
+				var li = document.createElement("li");
+				var box = document.createElement("div");
+				box.appendChild(img);
+				li.appendChild(box);
+				ul.appendChild(li);
+			}
+			body.appendChild(ul);
 		}
 
 		//Constructer
@@ -99,22 +109,27 @@
 			}
 			//スライド表示用領域に画像リストを挿入
 			var body = document.getElementById(body_id);
-			var ul = document.createElement("ul");
-			ul.className = "";
-			for (var idx = 0; idx < this._image_list.length; idx++) {
-				var img = this._image_list[idx];
-				var li = document.createElement("li");
-				li.appendChild(img);
-				ul.appendChild(li);
-			}
-			body.appendChild(ul);
+			setup_slideshow_dom.call(this, body);
+
 			//スライド表示用領域の大きさを決定するために、全ての画像読み込みを待つ必要があるため、
 			//ポーリングする
 			var self = this;
 			function slideshowReadyFunc () {
+				var padding = 8;
 				if (img_loaded_count === self._image_list.length) {
-					body.style.width = max_width.toString() + "px";
-					body.style.height = max_height.toString() + "px";
+					var width  = self._screen_width  = max_width + padding * 2;
+					var height = self._screen_height = max_height + padding * 2;
+					body.style.width = width.toString() + "px";
+					body.style.height = height.toString() + "px";
+					var li_list = body.getElementsByTagName("li");
+					for (var i = 0; i < li_list.length; i++) {
+						var li = li_list[i];
+						li.style.width = width.toString() + "px";
+						var box = li.querySelector("div");
+						box.style.width = max_width + "px";
+						box.style.margin = "0px auto";
+						box.style.textAlign = "center";
+					}
 					self._ready = true;
 					self.goto(self._current_idx);
 				} else {
