@@ -42,20 +42,29 @@
 			var fps = 60;
 			var interval = 500 / fps;
 			var ul = document.querySelector("#" + self._body_id + " ul");
-			var scroll_width = self._screen_width;
-			var goal_position = pixel_to_num(ul.style.left) - (scroll_width * vector);
-			function animScroll (scroll_vector) {
-				ul.style.left = pixel_operation(ul.style.left, scroll_vector);
+			//フレーム毎の移動後位置を返す関数オブジェクトを定義
+			var next_frame = (function(){
 				var cur_pos = pixel_to_num(ul.style.left);
-				if (cur_pos !== goal_position) {
-					if (Math.abs(goal_position - cur_pos) < Math.abs(scroll_vector)) {
-						scroll_vector = goal_position - cur_pos;
+				var goal_pos = cur_pos - (self._screen_width * vector);
+				var movement = (self._screen_width / fps) * (vector > 0 ? -1 : +1);
+				return function () {
+					if (cur_pos === goal_pos) { return false; }
+					if (Math.abs(goal_pos - cur_pos) < Math.abs(movement)) {
+						cur_pos = goal_pos;
+					} else {
+						cur_pos += movement;
 					}
-					setTimeout(function () { animScroll(scroll_vector); }, interval);
-				}
+					return cur_pos;
+				};
+			})();
+			//上記オブジェクトを呼び出して、スクリーンを移動していく
+			function animScroll (next_frame) {
+				var next_pos = next_frame();
+				if (next_pos === false) { return; }
+				ul.style.left = next_pos.toString() + "px";
+				setTimeout(function () { animScroll(next_frame); }, interval);
 			}
-			var move_length = scroll_width / fps;
-			setTimeout(function () { animScroll(move_length * (vector > 0 ? -1 : +1)); }, interval);
+			setTimeout(function () { animScroll(next_frame); }, interval);
 		}
 
 		function goto_scroll_anim(goto_idx) {
