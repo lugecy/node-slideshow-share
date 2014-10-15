@@ -12,6 +12,9 @@ var server = http.createServer(function (req, res) {
 	if (pathname.slice(-4) === ".jpg") {
 		ctype = "image/jpg";
 	}
+	if (pathname.slice(-4) === ".gif") {
+		ctype = "image/gif";
+	}
 	if (pathname.slice(-3) === ".js") {
 		ctype = "text/javascript";
 	}
