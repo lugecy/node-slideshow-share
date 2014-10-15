@@ -81,12 +81,20 @@
 			ul.style.left = pixel_operation(ul.style.left, goal_position);
 		}
 
-		function setup_slideshow_dom(body, url_list, img_load_handler) {
-			var self = this;
-			//ローディング画像表示
+		function show_loading(body) {
 			var loading_img = new Image();
 			loading_img.src = "loading.gif";
 			body.appendChild(loading_img);
+		}
+
+		function hide_loading(body) {
+			body.removeChild(body.firstChild);
+		}
+
+		function setup_slideshow_dom(body, url_list, img_load_handler) {
+			var self = this;
+			//ローディング画像表示
+			show_loading(body);
 			//画像リスト生成
 			var ul = document.createElement("ul");
 			ul.className = "";
@@ -101,7 +109,7 @@
 				//リスト要素としてDOM構造追加
 				var li = document.createElement("li");
 				var box = document.createElement("div");
-				box.style.display = "none";
+				box.style.display = "none"; //ローディング画像表示のために非表示に
 				box.appendChild(img);
 				li.appendChild(box);
 				ul.appendChild(li);
@@ -126,7 +134,7 @@
 			var width  = self._screen_width  = max_width + padding * 2;
 			var height = self._screen_height = max_height + padding * 2;
 			var body = document.getElementById(self._body_id);
-			body.removeChild(body.firstChild); //ローディング画像削除
+			hide_loading(body);
 			body.style.width = int_to_pixel(width);
 			body.style.height = int_to_pixel(height);
 			//各画像ボックスの幅等を設定
@@ -136,7 +144,7 @@
 				li.style.width = int_to_pixel(width);
 				var box = li.querySelector("div");
 				box.style.width = int_to_pixel(max_width);
-				box.style.display = "block";
+				box.style.display = "block"; //非表示を解除
 				box.style.margin = "0px auto";
 				box.style.textAlign = "center";
 			}
