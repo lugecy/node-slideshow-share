@@ -18,9 +18,13 @@
 			return pixel_str === "" ? 0 : parseInt(pixel_str.replace(/\.px$/, ''), 10);
 		}
 
+		function int_to_pixel(int) {
+			return int.toString() + "px";
+		}
+
 		function pixel_operation(pixel_str, num) {
 			var cur_pixel = pixel_to_int(pixel_str);
-			return (cur_pixel + num).toString() + "px";
+			return int_to_pixel(cur_pixel + num);
 		}
 
 		function switch_simple(self, vector) {
@@ -61,7 +65,7 @@
 			function animScroll (next_frame) {
 				var next_pos = next_frame();
 				if (next_pos === false) { return; }
-				ul.style.left = next_pos.toString() + "px";
+				ul.style.left = int_to_pixel(next_pos);
 				setTimeout(function () { animScroll(next_frame); }, interval);
 			}
 			setTimeout(function () { animScroll(next_frame); }, interval);
@@ -116,15 +120,15 @@
 			var width  = self._screen_width  = max_width + padding * 2;
 			var height = self._screen_height = max_height + padding * 2;
 			var body = document.getElementById(self._body_id);
-			body.style.width = width.toString() + "px";
-			body.style.height = height.toString() + "px";
+			body.style.width = int_to_pixel(width);
+			body.style.height = int_to_pixel(height);
 			//各画像ボックスの幅等を設定
 			var li_list = body.getElementsByTagName("li");
 			for (var i = 0; i < li_list.length; i++) {
 				var li = li_list[i];
-				li.style.width = width.toString() + "px";
+				li.style.width = int_to_pixel(width);
 				var box = li.querySelector("div");
-				box.style.width = max_width + "px";
+				box.style.width = int_to_pixel(max_width);
 				box.style.margin = "0px auto";
 				box.style.textAlign = "center";
 			}
