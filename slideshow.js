@@ -14,12 +14,12 @@
 			img.className = css_classname;
 		}
 
-		function pixel_to_num(pixel_str) {
+		function pixel_to_int(pixel_str) {
 			return pixel_str === "" ? 0 : parseInt(pixel_str.replace(/\.px$/, ''), 10);
 		}
 
 		function pixel_operation(pixel_str, num) {
-			var cur_pixel = pixel_to_num(pixel_str);
+			var cur_pixel = pixel_to_int(pixel_str);
 			return (cur_pixel + num).toString() + "px";
 		}
 
@@ -44,7 +44,7 @@
 			var ul = document.querySelector("#" + self._body_id + " ul");
 			//フレーム毎の移動後位置を返す関数オブジェクトを定義
 			var next_frame = (function(){
-				var cur_pos = pixel_to_num(ul.style.left);
+				var cur_pos = pixel_to_int(ul.style.left);
 				var goal_pos = cur_pos - (self._screen_width * vector);
 				var movement = (self._screen_width / fps) * (vector > 0 ? -1 : +1);
 				return function () {
