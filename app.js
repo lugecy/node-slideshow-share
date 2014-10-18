@@ -30,16 +30,52 @@ var server = http.createServer(function (req, res) {
 
 // 各クライアント間の通信用
 var io = socketio.listen(server);
-var current_idx = 0;
+var stages = {};
 io.sockets.on("connection", function (socket) {
-	socket.on("C2S_fetch_current_idx", function () {
-		socket.emit("S2C_inform_current_idx", {value: current_idx});
+	socket.on("C2S_initialze", function (data) {
+		var stage;
+		console.log(data);
+		if (!(stages.hasOwnProperty(data.SSID))) {
+			stage = stages[data.SSID] = { "clients": [], "cursor": 0 };
+		} else {
+			stage = stages[data.SSID];
+		}
+		stage.clients.push(socket);
+		socket.emit("S2C_inform_current_idx", {value: stage.cursor});
 	});
 	socket.on("C2S_movement_broadcast", function (data) {
-		current_idx += data.value;
-		socket.broadcast.emit("S2C_movement", {value: data.value});
+		var stage = findStageInClient(socket);
+		if (!stage) { return; }
+		stage.cursor += data.value;
+		for (var idx=0; idx < stage.clients.length; idx++) {
+			var s = stage.clients[idx];
+			if (s === socket) { continue; }
+			s.emit("S2C_movement", {value: data.value});
+		}
 	});
 	socket.on("disconnect", function () {
-		;
+		deleteClientFromStage(socket);
 	});
 });
+
+function findStageInClient(socket) {
+	var keys = Object.keys(stages);
+	for (var s_idx=0; s_idx < keys.length; s_idx++) {
+		var stage = stages[keys[s_idx]];
+		for (var c_idx=0; c_idx < stage.clients.length; c_idx++) {
+			if (socket === stage.clients[c_idx]) {
+				return stage;
+			}
+		}
+	}
+	return false;
+}
+function deleteClientFromStage(socket) {
+	var stage = findStageInClient(socket);
+	if (!stage) { return; }
+	for (var idx=0; idx < stage.clients.length; idx++) {
+		if (stage.clients[idx] === socket) {
+			stage.clients.splice(idx, 1);
+		}
+	}
+}

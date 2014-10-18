@@ -19,7 +19,7 @@
 				_this.recv(data.value);
 			});
 			//サーバーから現在のページを取得
-			s.emit("C2S_fetch_current_idx");
+			s.emit("C2S_initialze", {"SSID": slideshow.getSSID()});
 		}
 		var p = SlideShowController.prototype;
 		//各クライアントに進む/戻るイベントを送信
