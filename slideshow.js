@@ -91,6 +91,21 @@
 			body.removeChild(body.firstChild);
 		}
 
+		function override_style(elm, styles) {
+			Object.keys(styles).forEach(function (sname) {
+				elm.style[sname] = styles[sname];
+			});
+		}
+
+		function setup_image_style(img) {
+			override_style(img, {
+				"display": "block",
+				"maxWidth": "100%",
+				"maxHeight": "100%",
+				"margin": "0px auto"
+			});
+		}
+
 		function setup_slideshow_dom(body, url_list, img_load_handler) {
 			var self = this;
 			//ローディング画像表示
@@ -105,10 +120,7 @@
 				img.onload = img_load_handler;
 				img.src = image_info.url;
 				img.className = css_classname;
-				img.style.display = "block";
-				img.style.maxWidth  = "100%";
-				img.style.maxHeight = "100%";
-				img.style.margin = "0px auto";
+				setup_image_style(img);
 				self._image_list.push(img);
 				//リスト要素としてDOM構造追加
 				var li = document.createElement("li");
@@ -121,33 +133,22 @@
 
 		function setup_slideshow() {
 			var self = this;
-			//画像リストの最大幅・高さを求める
-			var max_width = 0, max_height = 0;
-			for (var idx = 0; idx < self._image_list.length; idx++) {
-				if (max_width < self._image_list[idx].naturalWidth) {
-					max_width = self._image_list[idx].naturalWidth;
-				}
-				if (max_height < self._image_list[idx].naturalHeight) {
-					max_height = self._image_list[idx].naturalHeight;
-				}
-			}
-			//スクリーンの最大幅で取得
-			var body = document.getElementById(self._body_id);
-			max_width = body.clientWidth;
-			max_height = body.clientHeight;
 			//表示領域の幅・高さを設定
-			var width  = self._screen_width  = max_width;
-			var height = self._screen_height = max_height;
+			var body = document.getElementById(self._body_id);
+			var width  = self._screen_width  = body.clientWidth;
+			var height = self._screen_height = body.clientHeight;
 			//ローディング画像を非表示に
 			hide_loading(body);
 			//各画像ボックスの幅等を設定
 			var li_list = body.getElementsByTagName("li");
 			for (var i = 0; i < li_list.length; i++) {
 				var li = li_list[i];
-				li.style.width = int_to_pixel(width);
-				li.style.height = int_to_pixel(height);
+				override_style(li, {
+					"width": int_to_pixel(width),
+					"height": int_to_pixel(height),
+					"textAlign": "center",
+				});
 				li.style.display = "block"; //非表示を解除
-				li.style.textAlign = "center";
 			}
 			//表示すべき画像へ移動
 			self._ready = true;
