@@ -1,0 +1,34 @@
+html, body {
+	/* スクロールバーが見えない程度。darty hack? */
+	width: 98%; 
+	height: 98%;
+}
+.slideshow-ctrl {
+}
+.slideshow-image {
+	/* display: none; */
+}
+.slideshow-image.active {
+	/* display: inline; */
+}
+#slideshow-body {
+	width: 100%;
+	height: 88%;
+	overflow: hidden;
+	position: relative;
+	padding: 0px;
+	margin: 0px;
+}
+#slideshow-body ul {
+	list-style: none outside none;
+	padding: 0px;
+	margin: 0px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 9999px;
+}
+#slideshow-body ul li {
+	float: left;
+	position: relative;
+}

@@ -18,6 +18,9 @@ var server = http.createServer(function (req, res) {
 	if (pathname.slice(-3) === ".js") {
 		ctype = "text/javascript";
 	}
+	if (pathname.slice(-4) === ".css") {
+		ctype = "text/css";
+	}
 	if (!fs.existsSync("."+pathname)) {
 		res.writeHead(404, {"Content-Type":"text/html"});
 		res.end("");

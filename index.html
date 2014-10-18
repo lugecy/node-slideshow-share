@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>SlideShow Share Prototype</title>
+	<link rel="stylesheet" type="text/css" href="app.css" media="all">
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script type="text/javascript" src="socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="slideshow.js"></script>
@@ -32,35 +33,6 @@
 		};
 	}
 	</script>
-	<style type="text/css">
-	.slideshow-ctrl {
-	}
-	.slideshow-image {
-		/* display: none; */
-	}
-	.slideshow-image.active {
-		/* display: inline; */
-	}
-	#slideshow-body {
-		overflow: hidden;
-		position: relative;
-		padding: 0px;
-		margin: 0px;
-	}
-	#slideshow-body ul {
-		list-style: none outside none;
-		padding: 0px;
-		margin: 0px;
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: 9999px;
-	}
-	#slideshow-body ul li {
-		float: left;
-		position: relative;
-	}
-	</style>
 </head>
 <body>
 	<h3>SlideShow</h3>

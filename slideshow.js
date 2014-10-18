@@ -105,13 +105,15 @@
 				img.onload = img_load_handler;
 				img.src = image_info.url;
 				img.className = css_classname;
+				img.style.display = "block";
+				img.style.maxWidth  = "100%";
+				img.style.maxHeight = "100%";
+				img.style.margin = "0px auto";
 				self._image_list.push(img);
 				//リスト要素としてDOM構造追加
 				var li = document.createElement("li");
-				var box = document.createElement("div");
-				box.style.display = "none"; //ローディング画像表示のために非表示に
-				box.appendChild(img);
-				li.appendChild(box);
+				li.style.display = "none"; //ローディング画像表示のために非表示に
+				li.appendChild(img);
 				ul.appendChild(li);
 			}
 			body.appendChild(ul);
@@ -119,7 +121,6 @@
 
 		function setup_slideshow() {
 			var self = this;
-			var padding = 8;
 			//画像リストの最大幅・高さを求める
 			var max_width = 0, max_height = 0;
 			for (var idx = 0; idx < self._image_list.length; idx++) {
@@ -130,23 +131,23 @@
 					max_height = self._image_list[idx].naturalHeight;
 				}
 			}
-			//表示領域の幅・高さを設定
-			var width  = self._screen_width  = max_width + padding * 2;
-			var height = self._screen_height = max_height + padding * 2;
+			//スクリーンの最大幅で取得
 			var body = document.getElementById(self._body_id);
+			max_width = body.clientWidth;
+			max_height = body.clientHeight;
+			//表示領域の幅・高さを設定
+			var width  = self._screen_width  = max_width;
+			var height = self._screen_height = max_height;
+			//ローディング画像を非表示に
 			hide_loading(body);
-			body.style.width = int_to_pixel(width);
-			body.style.height = int_to_pixel(height);
 			//各画像ボックスの幅等を設定
 			var li_list = body.getElementsByTagName("li");
 			for (var i = 0; i < li_list.length; i++) {
 				var li = li_list[i];
 				li.style.width = int_to_pixel(width);
-				var box = li.querySelector("div");
-				box.style.width = int_to_pixel(max_width);
-				box.style.display = "block"; //非表示を解除
-				box.style.margin = "0px auto";
-				box.style.textAlign = "center";
+				li.style.height = int_to_pixel(height);
+				li.style.display = "block"; //非表示を解除
+				li.style.textAlign = "center";
 			}
 			//表示すべき画像へ移動
 			self._ready = true;
