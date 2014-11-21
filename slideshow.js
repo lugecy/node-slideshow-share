@@ -125,6 +125,13 @@
 				//リスト要素としてDOM構造追加
 				var li = document.createElement("li");
 				li.style.display = "none"; //ローディング画像表示のために非表示に
+				//slipsnap
+				var ss = Flipsnap(img);
+				ss.element.addEventListener('fstouchend', function (ev) {
+					var vector = (ev.newPoint === -1 ? +1 : -1);
+					// console.log({'originPoint': ev.originPoint, 'newPoint': ev.newPoint});
+					self.go(vector);
+				}, false);
 				li.appendChild(img);
 				ul.appendChild(li);
 			}
